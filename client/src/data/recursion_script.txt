@@ -1,0 +1,3 @@
+info
+execute_script C:\Users\timof\IdeaProjects\prog-lab6\server\data\recur1.txt
+info

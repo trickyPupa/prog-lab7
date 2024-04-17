@@ -1,0 +1,18 @@
+info
+add
+Film for test
+200
+124
+100003
+PG_13
+123
+65
+ibn Director for Test Majid
+12.12.1903
+BLUE
+BLUE
+INDIA
+1.123
+23
+543
+show

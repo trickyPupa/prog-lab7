@@ -1,0 +1,6 @@
+execute_script C:\Users\timof\IdeaProjects\prog-lab6\server\data\script.txt
+
+execute_script C:\Users\timof\IdeaProjects\prog-lab6\server\data\recursion_script.txt
+
+
+
