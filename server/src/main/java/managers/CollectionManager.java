@@ -26,7 +26,7 @@ public class CollectionManager extends AbstractCollectionManager<Movie> {
         collection = new Vector<>(vec);
         creationDate = LocalDateTime.now();
 
-        Movie.setId_counter(vec.stream().map(Movie::getId).max(Integer::compareTo).orElse(1));
+//        Movie.setId_counter(vec.stream().map(Movie::getId).max(Integer::compareTo).orElse(1));
         Movie.setMaxNameLen(vec.stream().map(Movie::getName).max(Comparator.comparingInt(String::length)).get().length());
     }
 

@@ -18,6 +18,7 @@ import static java.lang.Math.max;
 public class Person implements Comparable<Person>, Checkable {
     private static int maxNameLen = 10;
 
+    private int id = 0;
     private String name; //Поле не может быть null, Строка не может быть пустой
 //    @JsonSerialize(using = FileManager.CustomDateSerializer.class)
     private Date birthday; //Поле не может быть null
@@ -26,7 +27,7 @@ public class Person implements Comparable<Person>, Checkable {
     private Country nationality; //Поле не может быть null
     private Location location; //Поле не может быть null
 
-    protected Person() {}
+    public Person() {}
 
     public void setName(String name) {
         this.name = name;
@@ -50,6 +51,38 @@ public class Person implements Comparable<Person>, Checkable {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public EyeColor getEyeColor() {
+        return eyeColor;
+    }
+
+    public HairColor getHairColor() {
+        return hairColor;
+    }
+
+    public Country getNationality() {
+        return nationality;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public static Person createPerson(IInputManager input, IOutputManager output){

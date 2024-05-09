@@ -81,4 +81,9 @@ public class Location implements Checkable {
     public boolean checkItself(){
         return y != null && z != null;
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }

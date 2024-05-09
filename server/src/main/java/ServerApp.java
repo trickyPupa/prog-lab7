@@ -1,7 +1,6 @@
-import common.Utils;
 import common.abstractions.IOutputManager;
-import network.ConnectionRequest;
-import network.Serializer;
+import exceptions.DataBaseConnectionException;
+import managers.data_base.DataBaseManager;
 import managers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,23 +15,29 @@ public class ServerApp {
     public static Logger logger = LogManager.getRootLogger();
 
     public static void main(String[] args) {
-        // "C:\\Users\\timof\\IdeaProjects\\prog-lab6\\server\\data\\data.json"
+//        String filename = args[0].strip();
+//        start(filename);
 
-        String filename = args[0].strip();
-        start(filename);
-//        test();
+        test();
     }
 
     public static void test(){
-        var a = Serializer.prepareData(new ConnectionRequest());
-        System.out.println(Arrays.toString(a));
+        try {
+            var db = new DataBaseManager("C:\\Users\\timof\\IdeaProjects\\prog-lab7\\server\\src\\main\\resources\\config.txt");
+//            var db = new DataBaseManager("jdbc:postgresql://localhost:5432/prog", "postgres", "qwer");
 
-        byte[] c = Utils.concatBytes(a, new byte[] {0,0,0,0,0,0,0,0,0,0});
-        System.out.println(Arrays.toString(c));
+            String q1 = "select * from persons_prog";
+            String q2 = "select * from movies_prog";
+            var a = db.getMovies();
+            for (common.model.entities.Movie movie : a) {
+                System.out.println(movie);
+            }
 
-        var b = Serializer.deserializeData(c);
-        System.out.println(b);
-        System.out.println(((ConnectionRequest) b).getContent());
+        }
+        catch (DataBaseConnectionException e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }
     }
     
     private static void start(String filename){

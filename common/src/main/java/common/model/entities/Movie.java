@@ -20,7 +20,7 @@ import static java.lang.Math.max;
  */
 
 public class Movie implements Comparable<Movie>, Checkable {
-    private static int id_counter = 0;
+//    private static int id_counter = 0;
     private static int maxNameLen = 10;
     private Integer id; //Поле не может быть null, Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
 
@@ -37,7 +37,7 @@ public class Movie implements Comparable<Movie>, Checkable {
     private MpaaRating mpaaRating; //Поле не может быть null
     private Person director; //Поле не может быть null
 
-    protected Movie(){
+    public Movie(){
         ;
     }
 
@@ -107,21 +107,29 @@ public class Movie implements Comparable<Movie>, Checkable {
         this.length = length;
     }
 
-    protected void setDirector(Person director) {
+    public void setDirector(Person director) {
         this.director = director;
     }
 
-    protected void setMpaaRating(MpaaRating mpaaRating) {
+    public void setMpaaRating(MpaaRating mpaaRating) {
         this.mpaaRating = mpaaRating;
     }
 
-    protected void setCoordinates(Coordinates coordinates) {
+    public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
     }
 
-    public static void setId_counter(int id){
-        id_counter = id;
+    public void setId(Integer id) {
+        this.id = id;
     }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
+//    public static void setId_counter(int id){
+//        id_counter = id;
+//    }
 
     public static void setMaxNameLen(int maxNameLen) {
         Movie.maxNameLen = maxNameLen;
@@ -212,11 +220,11 @@ public class Movie implements Comparable<Movie>, Checkable {
         return elem;
     }
 
-    public void setGeneratedFields(){
-        id_counter++;
-        id = id_counter;
-        creationDate = LocalDate.now();
-    }
+//    public void setGeneratedFields(){
+//        id_counter++;
+//        id = id_counter;
+//        creationDate = LocalDate.now();
+//    }
 
 
     @Override

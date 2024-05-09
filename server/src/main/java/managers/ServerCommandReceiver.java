@@ -31,7 +31,7 @@ public class ServerCommandReceiver extends AbstractReceiver {
         if (shell.getCollectionManager().contains(obj)){
             shell.getServerOutputManager().print("Элемент уже существует в коллекции");
         } else {
-            obj.setGeneratedFields();
+//            obj.setGeneratedFields();
             shell.getCollectionManager().add(obj);
             shell.getServerOutputManager().print("Добавлен новый элемент, ему присвоен id=" + obj.getId() + ".");
         }
@@ -258,7 +258,7 @@ public class ServerCommandReceiver extends AbstractReceiver {
                 shell.getServerOutputManager().print("Такой элемент уже существует в коллекции");
                 shell.getServerOutputManager().print("Элемент c id=\" + id + \" не будет обновлён.");
             } else {
-                obj.setGeneratedFields();
+//                obj.setGeneratedFields();
                 a.get().update(obj);
                 shell.getCollectionManager().sort();
                 shell.getServerOutputManager().print("Элемент c id=" + id + " обновлён.");
