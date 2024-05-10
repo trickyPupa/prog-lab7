@@ -3,6 +3,7 @@ package managers.data_base;
 import common.model.entities.Movie;
 import common.model.entities.Person;
 import exceptions.DataBaseConnectionException;
+import exceptions.SQLDataInsertingException;
 
 import java.io.*;
 import java.sql.*;
@@ -33,6 +34,7 @@ public class DataBaseManager {
 
         try {
             connection = DriverManager.getConnection(host, user, password);
+            connection.setAutoCommit(false);
         } catch (SQLException e){
 //            System.out.println("sqlexception");
             throw new DataBaseConnectionException(e);
@@ -99,6 +101,7 @@ public class DataBaseManager {
 
             try {
                 connection = DriverManager.getConnection(this.host, user, password);
+                connection.setAutoCommit(false);
             } catch (SQLException e){
 //                System.out.println("sqlexception");
                 throw new DataBaseConnectionException(e);
@@ -151,57 +154,86 @@ public class DataBaseManager {
         }
     }
 
-    public boolean insertMovie(Movie movie, int user_id){
+    public void insertMovie(Movie movie, int user_id) throws SQLException {
+        // точка сохранения
+        Savepoint lastOKSavePoint = connection.setSavepoint();
+
         // вставка фильма
         String query = "INSERT INTO " +
-                "movies_prog (name, coordinates, creationdate, oscarscount, goldenpalmcount, length, mpaa, directorid, creatorid) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                "movies_prog (name, coordinates_x, coordinates_y, creationdate, oscarscount, goldenpalmcount, length, mpaa, director_id, creator_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         // надо узнать есть ли такой режиссер в базе, если есть, то сослаться на него, если нет - вставить
         Person director = movie.getDirector();
-        String directorExistsQuery = "SELECT * FROM persons_prog " +
-                "WHERE name = ? AND birthdate = ? AND eyecolor = ? AND haircolor = ? AND nationality = ? AND location = ?;";
 
         try {
-            // подготовка "запроса есть ли такой режиссер"
-            PreparedStatement directorExists = connection.prepareStatement(directorExistsQuery);
-            DBModelMapper.setPersonData(director, directorExists);
-
-            // выполнения запроса на поиск режиссера
-            var directorExistsResult = directorExists.executeQuery();
-            directorExistsResult.next();
-
-            // если есть, берем id
-            if (directorExistsResult.getFetchSize() > 0){
-                director.setId(directorExistsResult.getInt("id"));
+            int isDirector = directorExists(director);
+            if (isDirector == 0) {
+                // Если режиссера нет, вставляем его в базу данных
+                try {
+                    insertPerson(director);
+                } catch (SQLDataInsertingException e){
+//                    connection.rollback(lastOKSavePoint);
+                    throw e;
+                }
             }
-            // если нет, вставляем нового и заново выполняем подготовленный запрос на поиск
-            else{
-                // вставка
-                String insertDirectorQuery = "" +
-                        "INSERT INTO persons_prog (name, birthdate, eyecolor, haircolor, nationality, location) " +
-                        "VALUES (?, ?, ?, ?, ?, ?);";
-                PreparedStatement directorInsert = connection.prepareStatement(insertDirectorQuery);
-                DBModelMapper.setPersonData(director, directorInsert);
-                directorInsert.executeUpdate();
-
-                // повторный поиск
-                directorExistsResult = directorExists.executeQuery();
-                directorExistsResult.next();
-                director.setId(directorExistsResult.getInt("id"));
+            else {
+                director.setId(isDirector);
             }
             // режиссер готов
+
             // вставка фильма
             PreparedStatement insertMovieStatement = connection.prepareStatement(query);
             // назначение всех атрибутов фильма для бд
             DBModelMapper.setMovieData(movie, insertMovieStatement);
             // назначение user
-            insertMovieStatement.setInt(9, user_id);
+            insertMovieStatement.setInt(10, user_id);
             insertMovieStatement.executeUpdate();
 
-            return true;
+            connection.commit();
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            connection.rollback(lastOKSavePoint);
+            throw new SQLDataInsertingException("inserting movie", e);
         }
+    }
+
+    private int directorExists(Person director) throws SQLException {
+        String query = "SELECT * FROM persons_prog " +
+                "WHERE name = ? AND birthdate = ? AND eyecolor = ? AND haircolor = ? AND nationality = ? AND location = ?;";
+
+        PreparedStatement directorExists = connection.prepareStatement(query);
+        DBModelMapper.setPersonData(director, directorExists);
+        ResultSet result = directorExists.executeQuery();
+        if (result.next()) {
+            return result.getInt("id");
+        } else{
+            return 0;
+        }
+    }
+
+    private void insertPerson(Person person) throws SQLException {
+        String insertDirectorQuery =
+                "INSERT INTO persons_prog (name, birthdate, eyecolor, haircolor, nationality, location) " +
+                        "VALUES (?, ?, ?, ?, ?, ?);";
+        try {
+            PreparedStatement directorInsert = connection.prepareStatement(insertDirectorQuery, Statement.RETURN_GENERATED_KEYS);
+            DBModelMapper.setPersonData(person, directorInsert);
+            int a = directorInsert.executeUpdate();
+
+            if (a == 0){
+                throw new SQLException();
+            } else {
+                ResultSet generatedKeys = directorInsert.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    person.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Не удалось получить id созданного режиссера.");
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLDataInsertingException("inserting person", e);
+        }
+
     }
 }

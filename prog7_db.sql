@@ -44,7 +44,7 @@ CREATE TYPE mpaa_enum AS ENUM (
 CREATE TYPE location_type AS (
     x real,
     y int,
-    z int
+    z bigint
 );
 
 CREATE TABLE IF NOT EXISTS persons_prog (
@@ -66,7 +66,8 @@ CREATE TABLE IF NOT EXISTS users_prog (
 CREATE TABLE IF NOT EXISTS movies_prog (
     id serial PRIMARY KEY,
     name text,
-    coordinates point NOT NULL,
+    coordinates_x int NOT NULL CHECK ( coordinates_x > -879 ),
+    coordinates_y int NOT NULL CHECK ( coordinates_y <= 155 ),
     creationDate date DEFAULT CURRENT_DATE,
     oscarsCount int NOT NULL CHECK (oscarsCount > 0),
     goldenPalmCount int CHECK (goldenPalmCount > 0),

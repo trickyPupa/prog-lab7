@@ -1,13 +1,14 @@
 package managers.data_base;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import common.model.enums.*;
 import common.model.entities.*;
 import org.postgresql.geometric.PGpoint;
+import org.postgresql.util.PGobject;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 
 public class DBModelMapper {
     public static Movie getMovieFromDB(ResultSet record, ResultSet person) throws SQLException {
@@ -50,21 +51,27 @@ public class DBModelMapper {
 
     public static void setMovieData(Movie movie, PreparedStatement statement) throws SQLException {
         statement.setString(1, movie.getName());
-        statement.setString(2, movie.getCoordinates().toString());
-        statement.setDate(3, Date.valueOf(movie.getCreationDate()));
-        statement.setInt(4, movie.getOscarsCount());
-        statement.setInt(5, movie.getGoldenPalmCount());
-        statement.setLong(6, movie.getLength());
-        statement.setString(7, movie.getMpaaRating().toString());
-        statement.setInt(8, movie.getDirector().getId());
+        statement.setInt(2, movie.getCoordinates().getX());
+        statement.setLong(3, movie.getCoordinates().getY());
+        statement.setDate(4, Date.valueOf(movie.getCreationDate()));
+        statement.setInt(5, movie.getOscarsCount());
+        statement.setObject(6, movie.getGoldenPalmCount(), Types.INTEGER);
+        statement.setLong(7, movie.getLength());
+        statement.setObject(8, movie.getMpaaRating(), Types.OTHER);
+        statement.setInt(9, movie.getDirector().getId());
     }
 
     public static void setPersonData(Person person, PreparedStatement statement) throws SQLException {
         statement.setString(1, person.getName());
-        statement.setDate(2, (Date) person.getBirthday());
-        statement.setString(3, person.getEyeColor().toString());
-        statement.setString(4, person.getHairColor().toString());
-        statement.setString(5, person.getNationality().toString());
-        statement.setString(6, person.getLocation().toString());
+        statement.setDate(2, Date.valueOf(person.getBirthday().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()));
+        statement.setObject(3, person.getEyeColor(), Types.OTHER);
+        statement.setObject(4, person.getHairColor(), Types.OTHER);
+        statement.setObject(5, person.getNationality(), Types.OTHER);
+//        statement.setObject(6, person.getLocation().toString(), Types.OTHER);
+
+        var location = new PGobject();
+        location.setType("location_type");
+        location.setValue(person.getLocation().toString());
+        statement.setObject(6, location);
     }
 }

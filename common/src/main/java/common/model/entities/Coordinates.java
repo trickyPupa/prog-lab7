@@ -27,6 +27,14 @@ public class Coordinates implements Checkable, Comparable<Coordinates> {
         this.y = y;
     }
 
+    public int getX() {
+        return x;
+    }
+
+    public long getY() {
+        return y;
+    }
+
     public static Coordinates createCoords(IInputManager input, IOutputManager output){
         Coordinates elem = new Coordinates();
 
