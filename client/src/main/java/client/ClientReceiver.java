@@ -3,11 +3,9 @@ package client;
 import common.abstractions.AbstractReceiver;
 import common.abstractions.IInputManager;
 import common.abstractions.IOutputManager;
-import common.commands.abstractions.AbstractCommand;
 import common.exceptions.FileException;
 import common.exceptions.WrongArgumentException;
 import common.model.entities.Movie;
-import static common.Utils.concatObjects;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -35,13 +33,17 @@ public class ClientReceiver extends AbstractReceiver {
 
     @Override
     public void exit(Object[] args) {
+        outputManager.print("Завершение работы.");
         System.exit(0);
     }
 
     // проверить
     @Override
     public void executeScript(Object[] args) {
-        String filename = (String) args[1];
+        if (args.length < 2) {
+            throw new WrongArgumentException("Недостаточно аргументов для команды execute_script");
+        }
+        String filename = (String) args[2];
         File file = getFile(filename);
 
         StringBuilder writer = new StringBuilder();
@@ -132,10 +134,5 @@ public class ClientReceiver extends AbstractReceiver {
 
     private void modelObjectInput(Object[] args){
         addArg(args, Movie.createMovie(inputManager, outputManager));
-    }
-    
-    private void addArg(Object[] args, Object newArg){
-        var curCommand = (AbstractCommand) args[0];
-        curCommand.setArgs(concatObjects(args, new Object[] {newArg}));
     }
 }

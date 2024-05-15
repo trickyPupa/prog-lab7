@@ -1,5 +1,11 @@
 package common.abstractions;
 
+import common.commands.abstractions.AbstractCommand;
+
+import java.util.Arrays;
+
+import static common.utils.Funcs.concatObjects;
+
 public abstract class AbstractReceiver {
     protected IInputManager inputManager;
     protected IOutputManager outputManager;
@@ -7,6 +13,14 @@ public abstract class AbstractReceiver {
     public AbstractReceiver(IInputManager inp, IOutputManager out) {
         inputManager = inp;
         outputManager = out;
+    }
+
+    public static void addArg(Object[] args, Object newArg){
+//        System.out.println(Arrays.toString(args));
+//        System.out.println(newArg);
+
+        var curCommand = (AbstractCommand) args[0];
+        curCommand.setArgs(concatObjects(args, new Object[] {newArg}));
     }
 
     public void add(Object[] args){

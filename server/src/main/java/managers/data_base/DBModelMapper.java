@@ -11,14 +11,16 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class DBModelMapper {
-    public static Movie getMovieFromDB(ResultSet record, ResultSet person) throws SQLException {
+    public static Movie getMovieFromDB(ResultSet record, ResultSet person, String userLogin) throws SQLException {
         Movie result = new Movie();
 
         result.setId(record.getInt("id"));
+
         result.setName(record.getString("name"));
 //        result.setCoordinates(record.getObject("coordinates", Coordinates.class));
-        PGpoint point = (PGpoint) record.getObject("coordinates");
-        result.setCoordinates(new Coordinates((int)point.x, (long)point.y));
+//        PGpoint point = (PGpoint) record.getObject("coordinates");
+
+        result.setCoordinates(new Coordinates(record.getInt("coordinates_x"), record.getLong("coordinates_y")));
 
         result.setCreationDate(record.getDate("creationDate").toLocalDate());
         result.setMpaaRating(MpaaRating.valueOf(record.getString("mpaa")));
@@ -26,6 +28,8 @@ public class DBModelMapper {
         result.setGoldenPalmCount(record.getInt("goldenPalmCount"));
         result.setLength(record.getInt("length"));
         result.setDirector(getPersonFromDB(person));
+
+        result.setCreator(userLogin);
 
         return result;
     }
@@ -53,12 +57,13 @@ public class DBModelMapper {
         statement.setString(1, movie.getName());
         statement.setInt(2, movie.getCoordinates().getX());
         statement.setLong(3, movie.getCoordinates().getY());
-        statement.setDate(4, Date.valueOf(movie.getCreationDate()));
-        statement.setInt(5, movie.getOscarsCount());
-        statement.setObject(6, movie.getGoldenPalmCount(), Types.INTEGER);
-        statement.setLong(7, movie.getLength());
-        statement.setObject(8, movie.getMpaaRating(), Types.OTHER);
-        statement.setInt(9, movie.getDirector().getId());
+//        statement.setDate(4, Date.valueOf(movie.getCreationDate()));
+        statement.setInt(4, movie.getOscarsCount());
+        statement.setObject(5, movie.getGoldenPalmCount(), Types.INTEGER);
+        statement.setLong(6, movie.getLength());
+        statement.setObject(7, movie.getMpaaRating(), Types.OTHER);
+
+        statement.setInt(8, movie.getDirector().getId());
     }
 
     public static void setPersonData(Person person, PreparedStatement statement) throws SQLException {

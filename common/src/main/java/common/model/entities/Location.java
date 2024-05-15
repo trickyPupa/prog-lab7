@@ -6,7 +6,7 @@ import common.exceptions.InterruptException;
 
 import java.io.IOException;
 
-import static common.Utils.*;
+import static common.utils.Funcs.*;
 
 public class Location implements Checkable {
     private float x;

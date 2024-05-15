@@ -1,7 +1,6 @@
 package common.commands.implementations;
 
 import common.abstractions.AbstractReceiver;
-import common.Utils;
 import common.commands.abstractions.AbstractCommand;
 import common.commands.abstractions.Command;
 
@@ -9,7 +8,7 @@ import java.util.function.Function;
 
 public class SaveCommand extends AbstractCommand {
     public SaveCommand(Object[] args){
-        super("save", "Команда для сохранения текущей версии коллекции в файл.", "no", args);
+        super("save", "Команда для сохранения текущей версии коллекции.", "no", args);
     }
 
     @Override

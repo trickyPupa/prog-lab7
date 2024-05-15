@@ -49,7 +49,7 @@ CREATE TYPE location_type AS (
 
 CREATE TABLE IF NOT EXISTS persons_prog (
     id serial PRIMARY KEY,
-    name text NOT NULL,
+    name varchar NOT NULL,
     birthDate date NOT NULL,
     eyeColor eye_color_enum,
     hairColor hair_color_enum NOT NULL,
@@ -59,13 +59,14 @@ CREATE TABLE IF NOT EXISTS persons_prog (
 
 CREATE TABLE IF NOT EXISTS users_prog (
     id serial PRIMARY KEY,
-    login text UNIQUE NOT NULL,
-    password text NOT NULL
+    login varchar UNIQUE NOT NULL,
+    password_hash varchar(64) NOT NULL,
+    salt varchar(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS movies_prog (
     id serial PRIMARY KEY,
-    name text,
+    name varchar,
     coordinates_x int NOT NULL CHECK ( coordinates_x > -879 ),
     coordinates_y int NOT NULL CHECK ( coordinates_y <= 155 ),
     creationDate date DEFAULT CURRENT_DATE,
@@ -76,4 +77,19 @@ CREATE TABLE IF NOT EXISTS movies_prog (
     director_id INT NOT NULL REFERENCES persons_prog (id),
     creator_id INT NOT NULL REFERENCES users_prog (id)
 );
+
+CREATE OR REPLACE FUNCTION delete_directors_without_films()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM movies_prog WHERE director_id = OLD.director_id) THEN
+        DELETE FROM persons_prog WHERE id = OLD.director_id;
+    END IF;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_reference_trigger
+    AFTER DELETE ON movies_prog
+    FOR EACH ROW
+EXECUTE FUNCTION delete_directors_without_films();
 

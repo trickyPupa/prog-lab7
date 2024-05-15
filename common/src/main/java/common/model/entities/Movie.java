@@ -4,6 +4,7 @@ import common.model.enums.MpaaRating;
 import common.exceptions.InterruptException;
 import common.abstractions.IInputManager;
 import common.abstractions.IOutputManager;
+import common.user.User;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import static common.Utils.*;
+import static common.utils.Funcs.*;
 import static java.lang.Math.max;
 
 /**
@@ -36,6 +37,8 @@ public class Movie implements Comparable<Movie>, Checkable {
     private Coordinates coordinates; //Поле не может быть null
     private MpaaRating mpaaRating; //Поле не может быть null
     private Person director; //Поле не может быть null
+
+    private String creator;
 
     public Movie(){
         ;
@@ -91,8 +94,13 @@ public class Movie implements Comparable<Movie>, Checkable {
         return coordinates;
     }
 
+    public String getCreator() {
+        return creator;
+    }
+
     public void setName(String name) {
         this.name = name;
+        maxNameLen = max(maxNameLen, name.length());
     }
 
     public void setOscarsCount(int oscarsCount) {
@@ -119,7 +127,7 @@ public class Movie implements Comparable<Movie>, Checkable {
         this.coordinates = coordinates;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -127,7 +135,11 @@ public class Movie implements Comparable<Movie>, Checkable {
         this.creationDate = creationDate;
     }
 
-//    public static void setId_counter(int id){
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    //    public static void setId_counter(int id){
 //        id_counter = id;
 //    }
 
@@ -235,9 +247,9 @@ public class Movie implements Comparable<Movie>, Checkable {
 
     @Override
     public String toString() {
-        return String.format("%3d: %s (%s; rating - %5s; coordinates - %10s) with %3d Oscars and %3d Golden Palms by %10s.",
+        return String.format("%3d: %s (%s; rating - %5s; coordinates - %10s) with %3d Oscars and %3d Golden Palms by %10s. [creator = %s]",
                 id, " ".repeat(max(maxNameLen - name.length(), 0)) + name, creationDate, mpaaRating.name(), coordinates.toString(), oscarsCount, goldenPalmCount,
-                director.toString());
+                director.toString(), creator);
     }
 
     @Override

@@ -31,7 +31,7 @@
         <configuration>
           <mainClass>ServerApp</mainClass>
           <arguments>
-            <argument>C:\\Users\\timof\\IdeaProjects\\prog-lab6\\server\\data\\data.json</argument>
+            <argument>src/main/resources/config.txt</argument>
           </arguments>
         </configuration>
       </plugin>

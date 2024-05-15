@@ -1,7 +1,6 @@
 package common.commands.implementations;
 
 import common.abstractions.AbstractReceiver;
-import common.Utils;
 import common.commands.abstractions.AbstractCommand;
 import common.commands.abstractions.Command;
 
@@ -9,7 +8,8 @@ import java.util.function.Function;
 
 public class UpdateCommand extends AbstractCommand {
     public UpdateCommand(Object[] args) {
-        super("update", "Команда для обновления значений элемента коллекции с заданным id.",
+        super("update", "Команда для обновления значений элемента коллекции с заданным id. " +
+                        "Если элемент создан не вами, удаления не произойдет.",
                 "id {element}", args);
     }
 

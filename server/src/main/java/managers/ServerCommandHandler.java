@@ -6,10 +6,14 @@ import common.commands.abstractions.AbstractCommand;
 import common.commands.abstractions.Command;
 import common.commands.implementations.*;
 import common.exceptions.NoSuchCommandException;
+import common.user.User;
+import managers.data_base.PostgreDataBaseManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -18,54 +22,58 @@ import java.util.function.Function;
  * Класс - обработчик команд программы; считывает команды и вызывает их.
  */
 public class ServerCommandHandler implements Handler{
+    // класс с всеми нужными менеджерами
     public class ShellValuables {
         private ServerOutputManager serverOutputManager;
-        private final HistoryManager historyManager;
-        private CollectionManager collectionManager;
-        private FileManager fileManager;
+//        private final HistoryManager historyManager;
+        private PostgreDataBaseManager dataBaseManager;
+        private DataBaseCollectionManager dbCollectionManager;
         public final Logger logger;
 
         public final Map<String, Function<Object[], Command>> commands = new HashMap<>();
 
-        public ShellValuables(ServerOutputManager out1, CollectionManager col,
-                              FileManager fm, HistoryManager history, Logger log){
+        public ShellValuables(ServerOutputManager out1, DataBaseCollectionManager col,
+                              PostgreDataBaseManager dbManager, Logger log){
             serverOutputManager = out1;
-            collectionManager = col;
-            historyManager = history;
-            fileManager = fm;
+            dbCollectionManager = col;
+            dataBaseManager = dbManager;
+//            historyManager = history;
             logger = log;
+
         }
 
-        public HistoryManager getHistoryManager() {
-            return historyManager;
-        }
-
-        public CollectionManager getCollectionManager() {
-            return collectionManager;
-        }
+//        public HistoryManager getHistoryManager() {
+//            return historyManager;
+//        }
 
         public ServerOutputManager getServerOutputManager() {
             return serverOutputManager;
         }
 
-        public FileManager getFileManager() {
-            return fileManager;
+        public PostgreDataBaseManager getDataBaseManager() {
+            return dataBaseManager;
+        }
+
+        public DataBaseCollectionManager getCollectionManager() {
+            return dbCollectionManager;
         }
     }
+
+    // остальные переменные
 
     protected ShellValuables vals;
     protected AbstractReceiver receiver;
     protected ServerControlReceiver serverControlReceiver;
     protected static Map<String, Function<Object[], AbstractServerCommand>> serverCommands = new HashMap<>();
     static {
-        serverCommands.put("disconnect", DisconnectServerCommand::new);
+//        serverCommands.put("disconnect", DisconnectServerCommand::new);
         serverCommands.put("stop", StopServerCommand::new);
     }
     public static final Map<String, AbstractCommand> commandsListForClient = new HashMap<>();
 
 
-    public ServerCommandHandler(ServerOutputManager server_out, CollectionManager col, FileManager fm, Logger logger){
-        vals = new ShellValuables(server_out, col, fm, new HistoryManager(), logger);
+    public ServerCommandHandler(ServerOutputManager server_out, DataBaseCollectionManager col, PostgreDataBaseManager dbm, Logger logger){
+        vals = new ShellValuables(server_out, col, dbm, logger);
         receiver = new ServerCommandReceiver(vals);
 
         {
@@ -84,6 +92,7 @@ public class ServerCommandHandler implements Handler{
             vals.commands.put("remove_all_by_golden_palm_count", RemoveAllByGoldenPalmCountCommand::new);
             vals.commands.put("remove_lower", RemoveLowerCommand::new);
             vals.commands.put("execute_script", ExecuteScriptCommand::new);
+            vals.commands.put("log_out", LogOutCommand::new);
         }
 
         {
@@ -102,6 +111,7 @@ public class ServerCommandHandler implements Handler{
             commandsListForClient.put("remove_all_by_golden_palm_count", new RemoveAllByGoldenPalmCountCommand(null));
             commandsListForClient.put("remove_lower", new RemoveLowerCommand(null));
             commandsListForClient.put("execute_script", new ExecuteScriptCommand(null));
+            commandsListForClient.put("log_out", new LogOutCommand(null));
         }
     }
 
@@ -112,10 +122,17 @@ public class ServerCommandHandler implements Handler{
     public void nextCommand(Command currentCommand) {
         vals.logger.info("Выполняется команда " + currentCommand.getName());
 
+        User user = (User) currentCommand.getArgs()[1];
+        try {
+            user.setId(vals.getDataBaseManager().userExists(user.getLogin()));
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         vals.logger.info("Переданные аргументы: " + Arrays.toString(currentCommand.getArgs()));
 
         currentCommand.execute(receiver);
-        vals.getHistoryManager().next(currentCommand);
+
         vals.logger.info("Команда " + currentCommand.getName() + " выполнена");
     }
 

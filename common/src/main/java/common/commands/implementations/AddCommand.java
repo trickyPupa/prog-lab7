@@ -1,7 +1,5 @@
 package common.commands.implementations;
 
-import common.Utils;
-import common.abstractions.DataInputReceiver;
 import common.commands.abstractions.AbstractCommand;
 import common.abstractions.AbstractReceiver;
 import common.commands.abstractions.Command;

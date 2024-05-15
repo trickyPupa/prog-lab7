@@ -14,7 +14,8 @@ public class ServerControlReceiver {
     }
 
     public int stop(){
-        disconnect();
+//        disconnect();
+//        serverConnectionManager.stop();
         serverConnectionManager.close();
         return 1;
     }

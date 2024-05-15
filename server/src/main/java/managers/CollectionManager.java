@@ -9,25 +9,28 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Класс управляет основной коллекцией; данная реализация работает с {@link Vector}.
+ * Класс управляет основной коллекцией; данная реализация работает с {@link CopyOnWriteArrayList}.
  */
 public class CollectionManager extends AbstractCollectionManager<Movie> {
-    private Vector<Movie> collection;
+    private CopyOnWriteArrayList<Movie> collection;
     private final LocalDateTime creationDate;
 
     public CollectionManager(){
-        collection = new Vector<>();
+        collection = new CopyOnWriteArrayList<>();
         creationDate = LocalDateTime.now();
     }
 
-    public CollectionManager(Vector<Movie> vec){
-        collection = new Vector<>(vec);
+    public CollectionManager(CopyOnWriteArrayList<Movie> vec){
+        collection = new CopyOnWriteArrayList<>(vec);
         creationDate = LocalDateTime.now();
 
 //        Movie.setId_counter(vec.stream().map(Movie::getId).max(Integer::compareTo).orElse(1));
-        Movie.setMaxNameLen(vec.stream().map(Movie::getName).max(Comparator.comparingInt(String::length)).get().length());
+        var maxMovieLen = vec.stream().map(Movie::getName).max(Comparator.comparingInt(String::length));
+        maxMovieLen.ifPresent(s -> Movie.setMaxNameLen(s.length()));
+
     }
 
     @Override
@@ -92,8 +95,8 @@ public class CollectionManager extends AbstractCollectionManager<Movie> {
         collection.clear();
     }
 
-    public Vector<Movie> getCollection(){
-        return new Vector<>(collection);
+    public CopyOnWriteArrayList<Movie> getCollection(){
+        return new CopyOnWriteArrayList<>(collection);
     }
 
     @Override

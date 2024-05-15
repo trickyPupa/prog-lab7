@@ -1,7 +1,6 @@
 package common.commands.implementations;
 
 import common.abstractions.AbstractReceiver;
-import common.Utils;
 import common.commands.abstractions.AbstractCommand;
 import common.commands.abstractions.Command;
 
@@ -9,7 +8,8 @@ import java.util.function.Function;
 
 public class RemoveByIdCommand extends AbstractCommand {
     public RemoveByIdCommand(Object[] args) {
-        super("remove_by_id", "Команда для удаления элемента коллекции с заданным id.",
+        super("remove_by_id", "Команда для удаления элемента коллекции с заданным id. " +
+                        "Если элемент создан не вами, удаления не произойдет.",
                 "id", args);
     }
 

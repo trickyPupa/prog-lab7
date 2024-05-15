@@ -1,9 +1,9 @@
-package common;
+package common.utils;
 
 /**
  * Класс с полезными функциями.
  */
-public class Utils {
+public class Funcs {
     /**
      * @param s строка, которую требуется проверить
      * @return можно ли преобразовать строку в int
@@ -43,7 +43,7 @@ public class Utils {
         }
     }
 
-    public static byte[] concatBytes(byte[] a, byte[] b){
+    public static synchronized byte[] concatBytes(byte[] a, byte[] b){
         int l = a.length + b.length;
         byte[] res = new byte[l];
 

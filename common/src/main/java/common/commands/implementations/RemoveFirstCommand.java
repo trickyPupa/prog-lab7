@@ -1,7 +1,6 @@
 package common.commands.implementations;
 
 import common.abstractions.AbstractReceiver;
-import common.Utils;
 import common.commands.abstractions.AbstractCommand;
 import common.commands.abstractions.Command;
 
@@ -9,7 +8,7 @@ import java.util.function.Function;
 
 public class RemoveFirstCommand extends AbstractCommand {
     public RemoveFirstCommand(Object[] arg) {
-        super("remove_first", "Команда для удаления первого элемента коллекции.",
+        super("remove_first", "Команда для удаления первого найденного элемента коллекции, созданного вами.",
                 "no", arg);
     }
 

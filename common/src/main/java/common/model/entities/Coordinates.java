@@ -7,7 +7,7 @@ import common.abstractions.IOutputManager;
 import java.io.IOException;
 
 import static java.lang.Math.sqrt;
-import static common.Utils.*;
+import static common.utils.Funcs.*;
 
 public class Coordinates implements Checkable, Comparable<Coordinates> {
     private int x;  // > -879

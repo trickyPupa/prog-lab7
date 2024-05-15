@@ -8,7 +8,7 @@ import common.model.enums.EyeColor;
 import common.model.enums.HairColor;
 import common.model.enums.MpaaRating;
 import exceptions.DataBaseConnectionException;
-import managers.data_base.DataBaseManager;
+import managers.data_base.PostgreDataBaseManager;
 import managers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,25 +26,25 @@ public class ServerApp {
     public static Logger logger = LogManager.getRootLogger();
 
     public static void main(String[] args) {
-//        String filename = args[0].strip();
-//        start(filename);
+        String filename = args[0].strip();
+        start(filename);
 
-        test();
+//        test();
     }
 
     public static void test(){
         try {
-            var db = new DataBaseManager("C:\\Users\\timof\\IdeaProjects\\prog-lab7\\server\\src\\main\\resources\\config.txt");
+            var db = new PostgreDataBaseManager("C:\\Users\\timof\\IdeaProjects\\prog-lab7\\server\\src\\main\\resources\\config.txt");
 //            var db = new DataBaseManager("jdbc:postgresql://localhost:5432/prog", "postgres", "qwer");
 
             Movie movie = new Movie();
-            movie.setName("Harry Potter 6");
-            movie.setCoordinates(new Coordinates(36, 76));
+            movie.setName("Harry Potter 87");
+            movie.setCoordinates(new Coordinates(374, -76));
             movie.setCreationDate(LocalDate.now());
-            movie.setLength(123);
-            movie.setGoldenPalmCount(null);
-            movie.setOscarsCount(7);
-            movie.setMpaaRating(MpaaRating.NC_17);
+            movie.setLength(13);
+            movie.setGoldenPalmCount(4);
+            movie.setOscarsCount(8);
+            movie.setMpaaRating(MpaaRating.PG);
 
             Person person = new Person();
             person.setLocation(new Location(2, 3, 5));
@@ -71,12 +71,21 @@ public class ServerApp {
     
     private static void start(String filename){
         IOutputManager outputManager = new ServerOutputManager();
-        FileManager fileManager = new FileManager(filename);
-        CollectionManager collectionManager = new CollectionManager(fileManager.collectionFromFile());
+        PostgreDataBaseManager dataBaseManager;
+        try {
+            dataBaseManager = new PostgreDataBaseManager(filename);
+        } catch (DataBaseConnectionException e) {
+            logger.debug(e.getMessage());
+            logger.debug(e);
+            logger.fatal("Не удалось подключиться к базе данных.");
+            return;
+        }
+        DataBaseCollectionManager dbCollectionManager = new DataBaseCollectionManager(dataBaseManager);
 
-        ServerCommandHandler handler = new ServerCommandHandler((ServerOutputManager) outputManager, collectionManager,
-                fileManager, logger);
+        ServerCommandHandler handler = new ServerCommandHandler((ServerOutputManager) outputManager,
+                dbCollectionManager, dataBaseManager, logger);
 
+        // поиск нужного порта и запуск сервера
         ServerConnectionManager serverConnectionManager = null;
         while (serverConnectionManager == null) {
             try {
@@ -88,50 +97,51 @@ public class ServerApp {
             }
         }
 
-        Scanner scanner = new Scanner(System.in);
 
-        class NonblockInput extends Thread {
-            private ServerConnectionManager scm;
-            private Scanner scanner;
+        { // возможность ввода команд прямо на сервере для завершения работы
+            Scanner scanner = new Scanner(System.in);
 
-            public NonblockInput(ServerConnectionManager s, Scanner a) {
-                super();
-                scm = s;
-                scanner = a;
-            }
+            class NonblockInput extends Thread {
+                private ServerConnectionManager scm;
+                private Scanner scanner;
 
-            public void run() {
-                while (true) {
-                    if (scanner.hasNext()){
-                        String text = scanner.nextLine();
+                public NonblockInput(ServerConnectionManager s, Scanner a) {
+                    super();
+                    scm = s;
+                    scanner = a;
+                }
 
-                        int commandCode = handler.nextServerCommand(text);
-                        if (commandCode == 1){
-                            logger.info("Завершение работы сервера.");
-                            scm.close();
-                            scanner.close();
-                            System.exit(0);
+                public void run() {
+                    while (true) {
+                        if (scanner.hasNext()) {
+                            String text = scanner.nextLine();
+
+                            int commandCode = handler.nextServerCommand(text);
+                            if (commandCode == 1) {
+                                logger.info("Завершение работы сервера.");
+                                scm.close();
+                                scanner.close();
+                                System.exit(0);
+                            }
+
                         }
-
                     }
                 }
             }
+
+            NonblockInput a = new NonblockInput(serverConnectionManager, scanner);
+            a.setPriority(Thread.MIN_PRIORITY);
+            a.setDaemon(true);
+            a.start();
         }
 
-        NonblockInput a = new NonblockInput(serverConnectionManager, scanner);
-        a.setPriority(Thread.MIN_PRIORITY);
-        a.start();
-
-        while (true) {
-            try {
-                serverConnectionManager.run();
-
-            }
-            catch (RuntimeException e) {
+        try {
+            serverConnectionManager.start();
+        }
+        catch (RuntimeException e) {
 //                System.out.println(e);
 //                System.out.println("main catch runtime");
-                logger.error(e + "\n" + Arrays.toString(e.getStackTrace()));
-            }
+            logger.error("{}\n{}", e, Arrays.toString(e.getStackTrace()));
         }
     }
 }

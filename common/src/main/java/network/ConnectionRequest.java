@@ -1,6 +1,6 @@
 package network;
 
-public class ConnectionRequest extends Request {
+public class  ConnectionRequest extends Request {
     protected Boolean success = null;
 
     public ConnectionRequest(){}

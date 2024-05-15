@@ -14,7 +14,7 @@ public class ConnectionResponse extends Response{
     protected Map<String, AbstractCommand> commandList;
 
     public ConnectionResponse(String msg, boolean success) {
-        super(msg);
+        super(msg, null);
         this.success = success;
     }
 
@@ -25,7 +25,7 @@ public class ConnectionResponse extends Response{
     }
 
     public ConnectionResponse(boolean success) {
-        super(success ? "Успешное подключение к серверу." : "Подключение к серверу недоступно в данный момент.");
+        super(success ? "Успешное подключение к серверу." : "Подключение к серверу недоступно в данный момент.", null);
         this.success = success;
     }
 
