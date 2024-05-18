@@ -76,10 +76,11 @@ public class ServerApp {
             dataBaseManager = new PostgreDataBaseManager(filename);
         } catch (DataBaseConnectionException e) {
             logger.debug(e.getMessage());
-            logger.debug(e);
+//            logger.debug(e);
             logger.fatal("Не удалось подключиться к базе данных.");
             return;
         }
+
         DataBaseCollectionManager dbCollectionManager = new DataBaseCollectionManager(dataBaseManager);
 
         ServerCommandHandler handler = new ServerCommandHandler((ServerOutputManager) outputManager,

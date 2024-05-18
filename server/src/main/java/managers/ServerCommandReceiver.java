@@ -153,14 +153,14 @@ public class ServerCommandReceiver extends AbstractReceiver {
     // подумать
     @Override
     public void history(Object[] args) {
-        IOutputManager output = shell.getServerOutputManager();
+        /*IOutputManager output = shell.getServerOutputManager();
 
         output.print("[");
-        /*for(Command i : shell.getHistoryManager().getHistory()){
+        for(Command i : shell.getHistoryManager().getHistory()){
             output.print("\t" + i.getName());
-        }*/
+        }
         output.print("No ideas bout history");
-        output.print("]");
+        output.print("]");*/
 
     }
 

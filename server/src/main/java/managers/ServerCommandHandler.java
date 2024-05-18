@@ -7,6 +7,7 @@ import common.commands.abstractions.Command;
 import common.commands.implementations.*;
 import common.exceptions.NoSuchCommandException;
 import common.user.User;
+import managers.data_base.DataBaseManager;
 import managers.data_base.PostgreDataBaseManager;
 import org.apache.logging.log4j.Logger;
 
@@ -26,14 +27,14 @@ public class ServerCommandHandler implements Handler{
     public class ShellValuables {
         private ServerOutputManager serverOutputManager;
 //        private final HistoryManager historyManager;
-        private PostgreDataBaseManager dataBaseManager;
+        private DataBaseManager dataBaseManager;
         private DataBaseCollectionManager dbCollectionManager;
         public final Logger logger;
 
         public final Map<String, Function<Object[], Command>> commands = new HashMap<>();
 
         public ShellValuables(ServerOutputManager out1, DataBaseCollectionManager col,
-                              PostgreDataBaseManager dbManager, Logger log){
+                              DataBaseManager dbManager, Logger log){
             serverOutputManager = out1;
             dbCollectionManager = col;
             dataBaseManager = dbManager;
@@ -50,7 +51,7 @@ public class ServerCommandHandler implements Handler{
             return serverOutputManager;
         }
 
-        public PostgreDataBaseManager getDataBaseManager() {
+        public DataBaseManager getDataBaseManager() {
             return dataBaseManager;
         }
 

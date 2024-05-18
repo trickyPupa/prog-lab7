@@ -81,6 +81,9 @@ public class ClientCommandHandler implements Handler {
             clientRequestManager.makeRequest(new CommandRequest(currentCommand, history));
             currentCommand.execute(simpleReceiver);
         } else{
+            if (currentCommand.getClass() == HistoryCommand.class){
+                printHistory();
+            }
             currentCommand.execute(simpleReceiver);
             clientRequestManager.makeRequest(new CommandRequest(currentCommand, history));
 
@@ -162,5 +165,13 @@ public class ClientCommandHandler implements Handler {
             }
             outputManager.print("Попробуйте еще раз.");
         }
+    }
+
+    public void printHistory(){
+        outputManager.print("[");
+        for(Command i : history){
+            outputManager.print("\t" + i.getName());
+        }
+        outputManager.print("]");
     }
 }
