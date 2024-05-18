@@ -1,11 +1,7 @@
 package managers.data_base;
 
-import common.user.User;
 import common.model.entities.Movie;
-import common.model.entities.Person;
 import exceptions.DataBaseConnectionException;
-import exceptions.SQLDataInsertingException;
-import exceptions.WrongUserException;
 
 import java.io.*;
 import java.sql.*;

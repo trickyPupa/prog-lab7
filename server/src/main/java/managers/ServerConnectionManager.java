@@ -31,7 +31,7 @@ public class ServerConnectionManager {
     private DatagramSocket socket;
     protected ServerCommandHandler handler;
 
-    private ConcurrentHashMap<SocketAddress, Pair<byte[][], Integer>> requestBuffers = new ConcurrentHashMap<>();
+    private volatile ConcurrentHashMap<SocketAddress, Pair<byte[][], Integer>> requestBuffers = new ConcurrentHashMap<>();
 
     private ExecutorService threadPool;
     private boolean running = true;
@@ -52,7 +52,7 @@ public class ServerConnectionManager {
 //        System.out.println("Старт сервера, порт: " + port);
     }
 
-    protected synchronized Pair<byte[], SocketAddress> handlePacket(DatagramPacket packet) {
+    protected Pair<byte[], SocketAddress> handlePacket(DatagramPacket packet) {
         SocketAddress address = packet.getSocketAddress();
         byte[] data = packet.getData();
         boolean received = false;
@@ -103,7 +103,7 @@ public class ServerConnectionManager {
             logger.info("Получение запроса от {} окончено", address);
         }
 
-        if (received){
+        if (received) {
             byte[] resultData = new byte[0];
             for (var j : newData){
                 resultData = concatBytes(resultData, j);

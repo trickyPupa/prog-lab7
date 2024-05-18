@@ -5,7 +5,6 @@ import common.model.entities.*;
 import org.postgresql.util.PGobject;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class DBModelMapper {
