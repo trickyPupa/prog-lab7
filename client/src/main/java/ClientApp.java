@@ -22,19 +22,22 @@ public class ClientApp {
 
     public static void main(String[] args) {
 //        test();
+        try {
+            if (isInt(args[1]))
+                PORT = Integer.parseInt(args[1]);
+            else
+                System.out.println("Некорректный аргумент 2 (порт)");
 
-        if (isInt(args[1]))
-            PORT = Integer.parseInt(args[1]);
-        else
-            System.out.println("Некорректный аргумент 1 (порт)");
+            String host = args[0];
+            if (host == null || host.isBlank())
+                HOST_NAME = "localhost";
+            else
+                HOST_NAME = host;
 
-        String host = args[0];
-        if (host == null || host.isBlank())
-            HOST_NAME = "localhost";
-        else
-            HOST_NAME = host;
-
-        start();
+            start();
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Не переданы необходимые аргументы: адрес сервера, порт.");
+        }
     }
 
     public static void test(){

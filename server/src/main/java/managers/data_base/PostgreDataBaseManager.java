@@ -96,15 +96,15 @@ public class PostgreDataBaseManager extends DataBaseManager{
         findUserQuery = "SELECT id FROM users_prog WHERE login = ?;";
 
         insertMovieQuery = "INSERT INTO " +
-                "movies_prog (name, coordinates_x, coordinates_y, oscarscount, goldenpalmcount, length, mpaa, director_id, creator_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";;
+                "movies_prog (name, coords, oscarscount, goldenpalmcount, length, mpaa, director_id, creator_id) " +
+                "VALUES (?, ROW(?, ?), ?, ?, ?, ?, ?, ?);";;
         insertPersonQuery = "INSERT INTO persons_prog (name, birthdate, eyecolor, haircolor, nationality, location) " +
                         "VALUES (?, ?, ?, ?, ?, ?);";
         insertUserQuery = "INSERT INTO users_prog (login, password_hash, salt) VALUES (?, ?, ?);";
         deleteMovieQuery = "DELETE FROM movies_prog WHERE id = ?;";
         updateMovieQuery = "UPDATE movies_prog " +
-                "SET (name, coordinates_x, coordinates_y, oscarscount, goldenpalmcount, length, mpaa, director_id) " +
-                "= (?, ?, ?, ?, ?, ?, ?, ?)" +
+                "SET (name, coords, oscarscount, goldenpalmcount, length, mpaa, director_id) " +
+                "= (?, ROW(?, ?), ?, ?, ?, ?, ?)" +
                 "WHERE id = ?;";
 
         getUserSaltQuery = "SELECT salt FROM users_prog WHERE login = ?;";

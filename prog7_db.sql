@@ -47,6 +47,11 @@ CREATE TYPE location_type AS (
     z bigint
 );
 
+CREATE TYPE coordinates AS(
+    x int,
+    y bigint
+);
+
 CREATE TABLE IF NOT EXISTS persons_prog (
     id serial PRIMARY KEY,
     name varchar NOT NULL,
@@ -67,8 +72,7 @@ CREATE TABLE IF NOT EXISTS users_prog (
 CREATE TABLE IF NOT EXISTS movies_prog (
     id serial PRIMARY KEY,
     name varchar,
-    coordinates_x int NOT NULL CHECK ( coordinates_x > -879 ),
-    coordinates_y int NOT NULL CHECK ( coordinates_y <= 155 ),
+    coords coordinates NOT NULL CHECK((coords).x > -879 AND (coords).y <= 155),
     creationDate date DEFAULT CURRENT_DATE,
     oscarsCount int NOT NULL CHECK (oscarsCount > 0),
     goldenPalmCount int CHECK (goldenPalmCount > 0),
@@ -92,4 +96,3 @@ CREATE TRIGGER check_reference_trigger
     AFTER DELETE ON movies_prog
     FOR EACH ROW
 EXECUTE FUNCTION delete_directors_without_films();
-

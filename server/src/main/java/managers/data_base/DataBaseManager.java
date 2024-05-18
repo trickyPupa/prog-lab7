@@ -6,15 +6,10 @@ import common.user.User;
 import exceptions.DataBaseConnectionException;
 import exceptions.SQLDataInsertingException;
 import exceptions.WrongUserException;
-import org.postgresql.util.PSQLException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Scanner;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class DataBaseManager {
     private String driver;

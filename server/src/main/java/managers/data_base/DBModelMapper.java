@@ -1,9 +1,7 @@
 package managers.data_base;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import common.model.enums.*;
 import common.model.entities.*;
-import org.postgresql.geometric.PGpoint;
 import org.postgresql.util.PGobject;
 
 import java.sql.*;
@@ -17,10 +15,10 @@ public class DBModelMapper {
         result.setId(record.getInt("id"));
 
         result.setName(record.getString("name"));
-//        result.setCoordinates(record.getObject("coordinates", Coordinates.class));
-//        PGpoint point = (PGpoint) record.getObject("coordinates");
 
-        result.setCoordinates(new Coordinates(record.getInt("coordinates_x"), record.getLong("coordinates_y")));
+//        result.setCoordinates(new Coordinates(record.getInt("coordinates_x"), record.getLong("coordinates_y")));
+        var coords = record.getString("coords").substring(1, record.getString("coords").length() - 1).split(",");
+        result.setCoordinates(new Coordinates(Integer.parseInt(coords[0]), Long.parseLong(coords[1])));
 
         result.setCreationDate(record.getDate("creationDate").toLocalDate());
         result.setMpaaRating(MpaaRating.valueOf(record.getString("mpaa")));
